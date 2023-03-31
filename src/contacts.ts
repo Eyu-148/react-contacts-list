@@ -1,16 +1,4 @@
 import localforage from "localforage";
-import { matchSorter } from "match-sorter";
-
-export interface singleContact {
-  id: string,
-  createAt: number,
-  first?: string,
-  last?: string,
-  avatar?: string,
-  twitter?: string,
-  notes?: string,
-  favorite?: boolean,
-}
 
 export async function getContacts() {
   let contacts:singleContact[] | null = [];
@@ -20,14 +8,13 @@ export async function getContacts() {
   return contacts;
 }
 
-export async function getContact(id:string) {
+export async function getContact(id:string|undefined) {
   let contacts:singleContact[] | null = [];
   let contact:singleContact | undefined;
   await localforage.getItem<singleContact[]>("contacts").then((val)=>{
     contacts = val;
   });
   contact = contacts.find(contact => contact.id === id);
-  console.log(contact);
   return contact ?? null;
 }
 
@@ -46,8 +33,17 @@ export async function createContact() {
   return contact;
 }
 
-export async function updateContact(id:string, updates:[]) {
-    
+export async function updateContact(id:string, updates:{[k: string]: FormDataEntryValue;}) {
+  let contact:singleContact | undefined;
+  let contacts:singleContact[];
+  await getContacts().then((data)=>{
+    contacts = data;
+    contact = contacts.find(contact=>contact.id === id);
+    if (!contact) throw new Error("No contact found for" + id);
+    Object.assign(contact, updates);
+    localforage.setItem("contacts", contacts);
+    return contact;
+  });
 }
 
 export async function deleteContact(id:string) {
