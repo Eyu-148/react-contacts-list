@@ -8,6 +8,8 @@ import Root, { actionNew } from './routes/root';
 import ErrorPage from './error_page';
 import Contact from './routes/contact';
 import NewContact, { actionEdit } from './routes/newContact';
+import { actionDestroy } from './routes/destroy';
+import Index from './routes';
 
 const router = createBrowserRouter([
   {
@@ -16,6 +18,10 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     action: actionNew,
     children: [
+      {
+        index: true,
+        element: <Index />,
+      },
       {
         path: "contacts/:contactId",
         element: <Contact />,
@@ -29,6 +35,10 @@ const router = createBrowserRouter([
         path: "newContact",
         element: <NewContact isNew={true} />,
       },
+      {
+        path: "contacts/:contactId/destroy",
+        action: actionDestroy,
+      }
   ]},
 ]);
 

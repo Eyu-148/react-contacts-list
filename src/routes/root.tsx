@@ -1,24 +1,31 @@
 // Global layout
 import { useEffect, useState } from "react";
-import { Outlet, Link, Form, useNavigate, redirect } from "react-router-dom";
+import { Outlet, NavLink, Form, redirect, useNavigation } from "react-router-dom";
 import {getContacts, createContact} from "../contacts";
 
 export async function actionNew() {
     const contact:singleContact = await createContact();
-    console.log(contact);
     return redirect(`/contacts/${contact.id}/edit`);
 }
 
 export default function Root() {
+    const navigation = useNavigation(); // this should work with loader to show a pending UI
     const [contact_list, setList] = useState<singleContact[]>([]);
+    const [query, setQuery] = useState<string>("");
 
     useEffect(() => {
         async function loadingData() {
-            const contact_list = await getContacts();
-            setList(contact_list);
+            const contacts = await getContacts();
+            contacts.filter((c)=>{
+                if (query==="") setList(contacts);
+                else if (c.first?.toLowerCase().includes(query.toLowerCase()) || 
+                         c.last?.toLowerCase().includes(query.toLowerCase())) {
+                    setList([...contact_list, c]);
+                }
+            });
         }
         loadingData();
-    }, []);
+    }, [query]);
     
     return(
         <>
@@ -26,8 +33,9 @@ export default function Root() {
                 <h1>Contacts List</h1>
                 <div>
                     <form className="search-form" role="search">
-                        <input className="search-input" aria-label="search contacts" 
-                               placeholder="Search..." type="search" name="Jane Joe" />
+                        <input id="search-input" aria-label="search contacts" 
+                               placeholder="Search..." type="search" name="search" 
+                               onChange={(event)=>{setQuery(event.target.value)}}/>
                         <div className="search-spinner" aria-hidden hidden={true} />
                         <div className="sr-only" aria-live="polite" />
                     </form>
@@ -40,7 +48,10 @@ export default function Root() {
                         <ul>
                             {contact_list.map((contact) => (
                                 <li key={contact.id}>
-                                    <Link to={`contacts/${contact.id}`}>
+                                    <NavLink to={`contacts/${contact.id}`}
+                                             className={({isActive, isPending})=>
+                                                isActive ? "active" : isPending ? "pending" : ""
+                                            }>
                                         {contact.first || contact.last ? 
                                         (
                                             <>
@@ -49,7 +60,7 @@ export default function Root() {
                                         ) : (
                                             <i>No Name</i>
                                         )}{" "}{contact.favorite && <span>★</span>}
-                                    </Link>
+                                    </NavLink>
                                 </li>
                             ))}
                         </ul>
@@ -58,7 +69,7 @@ export default function Root() {
                     )}
                 </nav>
             </div>
-            <div className="detail">
+            <div id="detail" className={navigation.state==="loading"?"loading":""}>
                 <Outlet />
             </div>
         </>

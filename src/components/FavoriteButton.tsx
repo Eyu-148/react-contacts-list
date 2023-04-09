@@ -1,5 +1,4 @@
 // Favorite component => favorite button
-import { singleContact } from "../contacts";
 import { Form } from "react-router-dom";
 
 export function Favorite({ contact }: { contact:singleContact }) {

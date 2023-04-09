@@ -10,15 +10,15 @@ export default function Contact() {
 
   useEffect(()=>{
     async function loadingData() {
-      const contact = await getContact(contactId);
-      if (contact !== null) setContact(contact);
+      const contactInfo = await getContact(contactId);
+      if (contactInfo) setContact(contactInfo);
     }
-    loadingData();
-  }, []);
+    setTimeout(loadingData, 1500);
+  }, [contactId]);
 
   // rendering
   return (
-    <div id="contact">
+    <div className="contact">
       <div>
         <img
           key={contact.avatar}

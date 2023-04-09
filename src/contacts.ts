@@ -13,8 +13,8 @@ export async function getContact(id:string|undefined) {
   let contact:singleContact | undefined;
   await localforage.getItem<singleContact[]>("contacts").then((val)=>{
     contacts = val;
+    if (contacts) contact = contacts.find(contact => contact.id === id);
   });
-  contact = contacts.find(contact => contact.id === id);
   return contact ?? null;
 }
 
@@ -24,10 +24,10 @@ export async function createContact() {
     id, 
     createAt: Date.now(),
   };
-  let contacts:singleContact[];
-  await getContacts().then((data)=>{
+  let contacts:singleContact[] | null;
+  await localforage.getItem<singleContact[]>("contacts").then((data)=>{
     contacts = data;
-    contacts.unshift(contact);
+    if (contacts) contacts.unshift(contact);
     localforage.setItem("contacts", contacts);
   });
   return contact;
@@ -35,10 +35,10 @@ export async function createContact() {
 
 export async function updateContact(id:string, updates:{[k: string]: FormDataEntryValue;}) {
   let contact:singleContact | undefined;
-  let contacts:singleContact[];
-  await getContacts().then((data)=>{
+  let contacts:singleContact[] | null;
+  await localforage.getItem<singleContact[]>("contacts").then((data)=>{
     contacts = data;
-    contact = contacts.find(contact=>contact.id === id);
+    if (contacts) contact = contacts.find(contact=>contact.id === id);
     if (!contact) throw new Error("No contact found for" + id);
     Object.assign(contact, updates);
     localforage.setItem("contacts", contacts);
@@ -47,7 +47,19 @@ export async function updateContact(id:string, updates:{[k: string]: FormDataEnt
 }
 
 export async function deleteContact(id:string) {
-    
+    let contacts:singleContact[] | null;
+    await localforage.getItem<singleContact[]>("contacts").then((data)=>{
+      contacts = data;
+      if (contacts) {
+        let index:number = contacts.findIndex(contact=>contact.id === id);
+        if (index >= 0) {
+          contacts.splice(index, 1);
+          localforage.setItem("contacts", contacts);
+          return true;
+        }
+      }
+      return false;
+    });
 }
 
 export async function cleanContacts() {

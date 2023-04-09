@@ -11,18 +11,18 @@ export async function actionEdit({ request, params }:{request:Request, params: P
     return redirect(`/contacts/${params.contactId}`);
 }
 
-export default function NewContact({isNew}:newContactProps) {
+export default function NewContact({isNew}:{isNew: boolean}) {
     const navigate = useNavigate();
     const {contactId} = useParams<string>();
-    const [contact, setContact] = useState<singleContact>(defaultContact);
+    const [contact, setContact] = useState<singleContact>(defaultContact);   
 
     useEffect(()=>{
         async function loadingData() {
-        const contact = await getContact(contactId);
-        if (contact !== null) setContact(contact);
+            const contact = await getContact(contactId);
+            if (contact) setContact(contact);
         }
         loadingData();
-    }, []);
+    }, [JSON.stringify(contact)]);
 
     return (
         <Form method="post" id="contact-form">
