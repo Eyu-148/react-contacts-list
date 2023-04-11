@@ -16,17 +16,11 @@ export default function Root() {
     useEffect(() => {
         async function loadingData() {
             const contacts = await getContacts();
-            contacts.filter((c)=>{
-                if (query==="") setList(contacts);
-                else if (c.first?.toLowerCase().includes(query.toLowerCase()) || 
-                         c.last?.toLowerCase().includes(query.toLowerCase())) {
-                    setList([...contact_list, c]);
-                }
-            });
+            if (contacts) setList(contacts);
         }
         loadingData();
     }, [query]);
-    
+
     return(
         <>
             <div className="sidebar">
@@ -46,20 +40,28 @@ export default function Root() {
                 <nav>
                     {contact_list.length ? (
                         <ul>
-                            {contact_list.map((contact) => (
-                                <li key={contact.id}>
-                                    <NavLink to={`contacts/${contact.id}`}
+                            {contact_list.filter((c) => {
+                                if (query === "") {
+                                    return c
+                                }
+                                else if (c.first?.toLowerCase().includes(query.toLowerCase()) || 
+                                         c.first?.toLowerCase().includes(query.toLowerCase())) {
+                                    return c;
+                                }
+                            }).map((c) => (
+                                <li key={c.id}>
+                                    <NavLink to={`contacts/${c.id}`}
                                              className={({isActive, isPending})=>
                                                 isActive ? "active" : isPending ? "pending" : ""
                                             }>
-                                        {contact.first || contact.last ? 
+                                        {c.first || c.last ? 
                                         (
                                             <>
-                                                {contact.first} {contact.last}
+                                                {c.first} {c.last}
                                             </>
                                         ) : (
                                             <i>No Name</i>
-                                        )}{" "}{contact.favorite && <span>★</span>}
+                                        )}{" "}{c.favorite && <span>★</span>}
                                     </NavLink>
                                 </li>
                             ))}

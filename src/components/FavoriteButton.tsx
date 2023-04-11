@@ -1,11 +1,13 @@
 // Favorite component => favorite button
-import { Form } from "react-router-dom";
+import { Form, useFetcher } from "react-router-dom";
+
 
 export function Favorite({ contact }: { contact:singleContact }) {
+    const fetcher = useFetcher();
     // yes, this is a `let` for later
     let favorite = contact.favorite;
     return (
-      <Form method="post">
+      <fetcher.Form method="post">
         <button
           name="favorite"
           value={favorite ? "false" : "true"}
@@ -13,6 +15,6 @@ export function Favorite({ contact }: { contact:singleContact }) {
         >
           {favorite ? "★" : "☆"}
         </button>
-      </Form>
+      </fetcher.Form>
     );
   }

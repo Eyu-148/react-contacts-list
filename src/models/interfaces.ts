@@ -13,7 +13,7 @@ export const defaultContact:singleContact = {
 
 declare global {
     interface ObjectConstructor {
-        formEntries<T>(obj: T):FromEntriesWithReadOnly<T>
+        fromEntries<T>(obj: T):FromEntriesWithReadOnly<T>
     }
 
     interface urlParams {

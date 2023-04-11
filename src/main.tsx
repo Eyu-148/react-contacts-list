@@ -6,7 +6,7 @@ import './index.css';
 
 import Root, { actionNew } from './routes/root';
 import ErrorPage from './error_page';
-import Contact from './routes/contact';
+import Contact, { handleFavorite } from './routes/contact';
 import NewContact, { actionEdit } from './routes/newContact';
 import { actionDestroy } from './routes/destroy';
 import Index from './routes';
@@ -25,6 +25,7 @@ const router = createBrowserRouter([
       {
         path: "contacts/:contactId",
         element: <Contact />,
+        action: handleFavorite,
       }, 
       {
         path: "contacts/:contactId/edit",

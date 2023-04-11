@@ -1,20 +1,31 @@
+import localforage from "localforage";
 import { useEffect, useState } from "react";
-import { Form, useParams } from "react-router-dom";
-import { getContact } from "../contacts";
+import { Form, Params, useParams } from "react-router-dom";
+import { getContact, getContacts, updateContact } from "../contacts";
 import { defaultContact } from "../models/interfaces";
 import { Favorite } from "../components/FavoriteButton";
+
+export async function handleFavorite({ request, params }:{request:Request, params: Params}) {
+  let formData = await request.formData();
+  let updates = {
+    favorite: formData.get("favorite") === "true"
+  };
+  console.log("favorite");
+  return updateContact(params.contactId ?? '', updates);
+}
 
 export default function Contact() {
   const {contactId} = useParams<string>();
   const [contact, setContact] = useState<singleContact>(defaultContact);
 
   useEffect(()=>{
-    async function loadingData() {
-      const contactInfo = await getContact(contactId);
-      if (contactInfo) setContact(contactInfo);
-    }
-    setTimeout(loadingData, 1500);
-  }, [contactId]);
+    getContact(contactId).then((res) => {
+      if (res) setContact(res);
+    });
+    //setTimeout(loadingData, 1500);
+    console.log("called.");
+  }, [contactId, contact.favorite]);
+
 
   // rendering
   return (

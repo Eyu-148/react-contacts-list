@@ -33,7 +33,7 @@ export async function createContact() {
   return contact;
 }
 
-export async function updateContact(id:string, updates:{[k: string]: FormDataEntryValue;}) {
+export async function updateContact(id:string, updates:{[k: string]: any;}) {
   let contact:singleContact | undefined;
   let contacts:singleContact[] | null;
   await localforage.getItem<singleContact[]>("contacts").then((data)=>{
@@ -42,8 +42,8 @@ export async function updateContact(id:string, updates:{[k: string]: FormDataEnt
     if (!contact) throw new Error("No contact found for" + id);
     Object.assign(contact, updates);
     localforage.setItem("contacts", contacts);
-    return contact;
   });
+  return contact;
 }
 
 export async function deleteContact(id:string) {
