@@ -2,7 +2,7 @@
 import { Form, useFetcher } from "react-router-dom";
 
 
-export function Favorite({ contact }: { contact:singleContact }) {
+export function Favorite({ contact, handleFavorite }: { contact:singleContact, handleFavorite:Function }) {
     const fetcher = useFetcher();
     // yes, this is a `let` for later
     let favorite = contact.favorite;
@@ -12,6 +12,7 @@ export function Favorite({ contact }: { contact:singleContact }) {
           name="favorite"
           value={favorite ? "false" : "true"}
           aria-label={favorite ? "Remove from favorites" : "Add to favorites"}
+          onClick={()=>handleFavorite(!favorite)}
         >
           {favorite ? "★" : "☆"}
         </button>

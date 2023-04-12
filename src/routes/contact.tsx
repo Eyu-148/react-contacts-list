@@ -17,14 +17,14 @@ export async function handleFavorite({ request, params }:{request:Request, param
 export default function Contact() {
   const {contactId} = useParams<string>();
   const [contact, setContact] = useState<singleContact>(defaultContact);
+  const [favor, setFavorite] = useState<boolean>(false);
 
   useEffect(()=>{
     getContact(contactId).then((res) => {
       if (res) setContact(res);
-    });
-    //setTimeout(loadingData, 1500);
-    console.log("called.");
-  }, [contactId, contact.favorite]);
+      setFavorite(contact.favorite ?? false);
+    })
+  }, [contactId, favor]);
 
 
   // rendering
@@ -46,7 +46,7 @@ export default function Contact() {
           ) : (
             <i>No Name</i>
           )}{" "}
-          <Favorite contact={contact} />
+          <Favorite contact={contact} handleFavorite={setFavorite} />
         </h1>
 
         {contact.twitter && (
